@@ -1,0 +1,15 @@
+{
+  "name": "teamtrack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TeamTrack : gestion du personnel et des stagiaires (délégation, avancement, difficultés)",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:api": "npm --prefix server run dev",
+    "dev:web": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed -- --reset",
+    "test": "npm --prefix server test && npm --prefix client test",
+    "lint": "npm --prefix server run lint && npm --prefix client run lint",
+    "build": "npm --prefix server run build && npm --prefix client run build"
+  }
+}

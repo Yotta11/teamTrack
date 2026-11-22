@@ -1,0 +1,56 @@
+# TeamTrack : trois services (base de données, API, front) — section 12 du cahier des charges.
+# Démarrage : cp .env.example .env && docker compose up -d --build
+name: teamtrack
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-teamtrack}
+      POSTGRES_USER: ${POSTGRES_USER:-teamtrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Définissez POSTGRES_PASSWORD dans .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ${REGISTRY:-teamtrack}/teamtrack-api:${TAG:-latest}
+    build: ./server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-teamtrack}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-teamtrack}
+      JWT_SECRET: ${JWT_SECRET:?Définissez JWT_SECRET dans .env}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      CORS_ORIGIN: ${APP_URL:-http://localhost:8080}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-TeamTrack <no-reply@teamtrack.local>}
+    volumes:
+      - uploads:/app/uploads
+
+  web:
+    image: ${REGISTRY:-teamtrack}/teamtrack-web:${TAG:-latest}
+    build:
+      context: ./client
+      args:
+        VITE_SHOW_DEMO: ${VITE_SHOW_DEMO:-false}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '${WEB_PORT:-8080}:80'
+
+volumes:
+  db-data:
+  uploads:
