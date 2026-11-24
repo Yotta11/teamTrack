@@ -165,7 +165,6 @@ function PersonalDashboard({ data }: { data: MeDashboard }) {
               )}
             </Panel>
           )}
-
           <Panel title="Rythme des 14 derniers jours" description={perimeter ? 'Tâches créées et terminées par jour dans votre périmètre' : 'Vos tâches créées et terminées par jour'}>
             <TrendBars
               data={data.trend}
