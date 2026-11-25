@@ -13,6 +13,7 @@ export interface BarSeries {
   color?: string;
 }
 
+
 export function TrendBars({ data, xKey, series, height = 220, formatX }: {
   data: Record<string, unknown>[];
   xKey: string;
@@ -57,6 +58,7 @@ export function BurndownChart({ data, unit, height = 260, formatX }: {
     </ResponsiveContainer>
   );
 }
+
 
 /** Barres horizontales simples (répartition par type, par personne…). */
 export function HBars({ items, max }: { items: { label: string; value: number; sub?: string }[]; max?: number }) {
